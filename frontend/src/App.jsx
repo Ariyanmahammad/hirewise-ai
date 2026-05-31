@@ -9,6 +9,10 @@ import JobDetails from "./pages/JobDetails";
 import Navbar from "./components/Navbar";
 import MyApplications from "./pages/MyApplications";
 
+import AdminDashboard from "./pages/AdminDashboard";
+import CreateJob from "./pages/CreateJob";
+import AdminApplications from "./pages/AdminApplications";
+
 const App = () => {
   return (
     <BrowserRouter>
@@ -21,6 +25,9 @@ const App = () => {
         <Route path="/jobs" element={<Jobs />} />
         <Route path="/jobs/:id" element={<JobDetails />} />
         <Route path="/my-applications" element={<MyApplications />} />
+        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/admin/create-job" element={<CreateJob />} />
+        <Route path="/admin/applications" element={<AdminApplications />} />
       </Routes>
     </BrowserRouter>
   );

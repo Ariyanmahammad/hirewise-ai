@@ -185,3 +185,47 @@ export const getMyApplications = async (req, res) => {
     });
   }
 };
+
+export const getApplicationStats = async (req, res) => {
+  try {
+    const applications = await Application.find();
+
+    const totalApplications = applications.length;
+
+    const shortlisted = applications.filter(
+      (app) => app.status === "Shortlisted"
+    ).length;
+
+    const selected = applications.filter(
+      (app) => app.status === "Selected"
+    ).length;
+
+    const rejected = applications.filter(
+      (app) => app.status === "Rejected"
+    ).length;
+
+    const averageScore =
+      applications.length > 0
+        ? Math.round(
+            applications.reduce((sum, app) => sum + app.aiScore, 0) /
+              applications.length
+          )
+        : 0;
+
+    res.status(200).json({
+      success: true,
+      stats: {
+        totalApplications,
+        shortlisted,
+        selected,
+        rejected,
+        averageScore,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
