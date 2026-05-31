@@ -5,6 +5,8 @@ import api from "../services/api";
 const Register = () => {
   const navigate = useNavigate();
 
+  const [role, setRole] = useState("candidate");
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -23,7 +25,10 @@ const Register = () => {
     e.preventDefault();
 
     try {
-      const res = await api.post("/auth/register", formData);
+      const res = await api.post("/auth/register", {
+        ...formData,
+        role,
+      });
 
       alert(res.data.message);
       navigate("/login");
@@ -43,14 +48,40 @@ const Register = () => {
         </h1>
 
         <p className="text-slate-500 text-center mb-8">
-          Join HireWise AI as a candidate
+          Join HireWise AI as a candidate or company
         </p>
+
+        <div className="grid grid-cols-2 gap-3 mb-6">
+          <button
+            type="button"
+            onClick={() => setRole("candidate")}
+            className={`py-3 rounded-xl border font-medium ${
+              role === "candidate"
+                ? "bg-indigo-600 text-white"
+                : "bg-white text-slate-600"
+            }`}
+          >
+            Candidate
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setRole("company")}
+            className={`py-3 rounded-xl border font-medium ${
+              role === "company"
+                ? "bg-indigo-600 text-white"
+                : "bg-white text-slate-600"
+            }`}
+          >
+            Company
+          </button>
+        </div>
 
         <div className="space-y-4">
           <input
             name="name"
             type="text"
-            placeholder="Full name"
+            placeholder={role === "company" ? "Company name" : "Full name"}
             className="w-full border rounded-xl px-4 py-3"
             value={formData.name}
             onChange={handleChange}
@@ -91,7 +122,7 @@ const Register = () => {
           type="submit"
           className="w-full bg-indigo-600 text-white py-3 rounded-xl font-semibold mt-6 hover:bg-indigo-700"
         >
-          Register
+          Register as {role === "company" ? "Company" : "Candidate"}
         </button>
 
         <p className="text-center text-slate-500 mt-6">
