@@ -73,3 +73,52 @@ export const getAllApplications = async (req, res) => {
     });
   }
 };
+
+export const updateApplicationStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    const allowedStatus = [
+      "Applied",
+      "Under Review",
+      "Shortlisted",
+      "Interview Scheduled",
+      "Selected",
+      "Rejected",
+    ];
+
+    if (!allowedStatus.includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid application status",
+      });
+    }
+
+    const application = await Application.findByIdAndUpdate(
+      id,
+      { status },
+      { new: true }
+    )
+      .populate("candidate", "name email phone")
+      .populate("job", "title company");
+
+    if (!application) {
+      return res.status(404).json({
+        success: false,
+        message: "Application not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Application status updated successfully",
+      application,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
