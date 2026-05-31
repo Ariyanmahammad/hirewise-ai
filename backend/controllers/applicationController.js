@@ -144,3 +144,26 @@ export const updateApplicationStatus = async (req, res) => {
     });
   }
 };
+
+export const getMyApplications = async (req, res) => {
+  try {
+    const applications = await Application.find({
+      candidate: req.userId,
+    })
+      .populate(
+        "job",
+        "title company location salary"
+      );
+
+    res.status(200).json({
+      success: true,
+      count: applications.length,
+      applications,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};

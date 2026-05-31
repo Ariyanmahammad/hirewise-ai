@@ -3,6 +3,7 @@ import {
   applyJob,
   getAllApplications,
   updateApplicationStatus,
+  getMyApplications
 } from "../controllers/applicationController.js";
 
 import authMiddleware, {
@@ -18,6 +19,11 @@ applicationRouter.get(
   authMiddleware,
   adminMiddleware,
   getAllApplications
+);
+applicationRouter.get(
+  "/my-applications",
+  authMiddleware,
+  getMyApplications
 );
 
 applicationRouter.patch(
