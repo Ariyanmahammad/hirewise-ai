@@ -30,10 +30,10 @@ const authMiddleware = async (req, res, next) => {
 
 export const adminMiddleware = (req, res, next) => {
   try {
-    if (req.role !== "admin") {
+    if (req.role !== "admin" && req.role !== "company") {
       return res.status(403).json({
         success: false,
-        message: "Admin access only",
+        message: "Admin or company access only",
       });
     }
 

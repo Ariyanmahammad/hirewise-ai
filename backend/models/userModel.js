@@ -22,7 +22,7 @@ const userSchema = new mongoose.Schema(
 
     role: {
       type: String,
-      enum: ["admin", "candidate"],
+      enum: ["candidate", "company", "admin"],
       default: "candidate",
     },
 
@@ -31,7 +31,7 @@ const userSchema = new mongoose.Schema(
       default: "",
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const User = mongoose.model("User", userSchema);
