@@ -46,3 +46,23 @@ export const createJob = async (req, res) => {
     });
   }
 };
+
+export const getAllJobs = async (req, res) => {
+  try {
+    const jobs = await Job.find().populate(
+      "createdBy",
+      "name email"
+    );
+
+    res.status(200).json({
+      success: true,
+      count: jobs.length,
+      jobs,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
