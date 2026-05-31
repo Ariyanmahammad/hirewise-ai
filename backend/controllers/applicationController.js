@@ -95,9 +95,23 @@ export const applyJob = async (req, res) => {
 
 export const getAllApplications = async (req, res) => {
   try {
-    const applications = await Application.find()
-      .populate("candidate", "name email phone")
-      .populate("job", "title company");
+    let applications;
+
+    if (req.role === "admin") {
+      applications = await Application.find()
+        .populate("candidate", "name email phone")
+        .populate("job", "title company createdBy");
+    } else {
+      applications = await Application.find()
+        .populate("candidate", "name email phone")
+        .populate({
+          path: "job",
+          select: "title company createdBy",
+          match: { createdBy: req.userId },
+        });
+
+      applications = applications.filter((app) => app.job !== null);
+    }
 
     res.status(200).json({
       success: true,
@@ -193,27 +207,39 @@ export const getMyApplications = async (req, res) => {
 
 export const getApplicationStats = async (req, res) => {
   try {
-    const applications = await Application.find();
+    let applications;
+
+    if (req.role === "admin") {
+      applications = await Application.find();
+    } else {
+      applications = await Application.find().populate({
+        path: "job",
+        select: "createdBy",
+        match: { createdBy: req.userId },
+      });
+
+      applications = applications.filter((app) => app.job !== null);
+    }
 
     const totalApplications = applications.length;
 
     const shortlisted = applications.filter(
-      (app) => app.status === "Shortlisted",
+      (app) => app.status === "Shortlisted"
     ).length;
 
     const selected = applications.filter(
-      (app) => app.status === "Selected",
+      (app) => app.status === "Selected"
     ).length;
 
     const rejected = applications.filter(
-      (app) => app.status === "Rejected",
+      (app) => app.status === "Rejected"
     ).length;
 
     const averageScore =
       applications.length > 0
         ? Math.round(
             applications.reduce((sum, app) => sum + app.aiScore, 0) /
-              applications.length,
+              applications.length
           )
         : 0;
 
