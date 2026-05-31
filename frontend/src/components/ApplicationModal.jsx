@@ -5,6 +5,7 @@ const ApplicationModal = ({ onClose, jobId }) => {
   const [education, setEducation] = useState("");
   const [experience, setExperience] = useState("");
   const [skills, setSkills] = useState("");
+  const [resume, setResume] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -17,16 +18,23 @@ const ApplicationModal = ({ onClose, jobId }) => {
         return;
       }
 
+      const formData = new FormData();
+
+      formData.append("education", education);
+      formData.append("experience", experience);
+      formData.append("skills", skills);
+
+      if (resume) {
+        formData.append("resume", resume);
+      }
+
       const res = await api.post(
         `/applications/apply/${jobId}`,
-        {
-          education,
-          experience,
-          skills: skills.split(",").map((skill) => skill.trim()),
-        },
+        formData,
         {
           headers: {
             token,
+            "Content-Type": "multipart/form-data",
           },
         }
       );
@@ -39,12 +47,14 @@ const ApplicationModal = ({ onClose, jobId }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-4">
       <form
         onSubmit={handleSubmit}
         className="bg-white w-full max-w-lg rounded-3xl p-8 shadow-xl"
       >
-        <h2 className="text-2xl font-bold mb-6">Apply for this job</h2>
+        <h2 className="text-2xl font-bold mb-6">
+          Apply for this job
+        </h2>
 
         <div className="space-y-4">
           <input
@@ -66,12 +76,25 @@ const ApplicationModal = ({ onClose, jobId }) => {
 
           <input
             type="text"
-            placeholder="Skills comma separated"
+            placeholder="Skills comma separated e.g. React,Node.js,MongoDB"
             value={skills}
             onChange={(e) => setSkills(e.target.value)}
             className="w-full border rounded-xl px-4 py-3"
             required
           />
+
+          <div>
+            <label className="block text-sm font-medium text-slate-600 mb-2">
+              Upload Resume PDF
+            </label>
+
+            <input
+              type="file"
+              accept=".pdf,.doc,.docx"
+              onChange={(e) => setResume(e.target.files[0])}
+              className="w-full border rounded-xl px-4 py-3"
+            />
+          </div>
         </div>
 
         <div className="flex justify-end gap-3 mt-6">

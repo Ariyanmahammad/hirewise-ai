@@ -3,7 +3,7 @@ import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 
 const Navbar = () => {
-  const { token, logout } = useContext(AuthContext);
+  const { token, user, logout } = useContext(AuthContext);
   return (
     <nav className="w-full bg-white shadow-sm px-8 py-4 flex items-center justify-between">
       <Link to="/" className="text-2xl font-bold text-indigo-600">
@@ -30,7 +30,11 @@ const Navbar = () => {
           </>
         ) : (
           <>
-            <Link to="/my-applications">My Applications</Link>
+            {user?.role === "company" || user?.role === "admin" ? (
+              <Link to="/admin">Dashboard</Link>
+            ) : (
+              <Link to="/my-applications">My Applications</Link>
+            )}
 
             <button
               onClick={logout}

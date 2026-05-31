@@ -19,10 +19,15 @@ const Login = () => {
         password,
       });
 
-      login(res.data.token);
+      login(res.data.token, res.data.user);
 
       alert("Login successful");
-      navigate("/jobs");
+
+      if (res.data.user.role === "company" || res.data.user.role === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/jobs");
+      }
     } catch (error) {
       alert(error.response?.data?.message || "Login failed");
     }
@@ -34,9 +39,7 @@ const Login = () => {
         onSubmit={handleLogin}
         className="bg-white w-full max-w-md p-8 rounded-3xl shadow-lg"
       >
-        <h1 className="text-3xl font-bold text-center mb-2">
-          Welcome Back
-        </h1>
+        <h1 className="text-3xl font-bold text-center mb-2">Welcome Back</h1>
 
         <p className="text-slate-500 text-center mb-8">
           Login to continue to HireWise AI
