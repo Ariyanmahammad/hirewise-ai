@@ -1,5 +1,6 @@
 import Application from "../models/applicationModel.js";
 import Job from "../models/jobModel.js";
+import cloudinary from "../config/cloudinary.js";
 
 export const applyJob = async (req, res) => {
   try {
@@ -21,11 +22,15 @@ export const applyJob = async (req, res) => {
         message: "Job not found",
       });
     }
-    const requiredSkills = job.skillsRequired.map((skill) =>
+   const requiredSkills = job.skillsRequired.map((skill) =>
   skill.toLowerCase().trim()
 );
 
-const candidateSkills = skills.map((skill) =>
+const skillsArray = Array.isArray(skills)
+  ? skills
+  : skills.split(",");
+
+const candidateSkills = skillsArray.map((skill) =>
   skill.toLowerCase().trim()
 );
 
@@ -53,15 +58,28 @@ const aiScore = Math.round(
       });
     }
 
+    let resumeUrl = "";
+
+if (req.file) {
+  const result = await cloudinary.uploader.upload(req.file.path, {
+    folder: "hirewise/resumes",
+    resource_type: "raw",
+  });
+
+  resumeUrl = result.secure_url;
+}
+
    const application = await Application.create({
   candidate: req.userId,
   job: jobId,
   education,
   experience,
-  skills,
+ skills: skillsArray,
+    resumeUrl,
   aiScore,
   matchedSkills,
-  missingSkills,
+  missingSkills
+  
 });
 
     res.status(201).json({

@@ -9,10 +9,16 @@ import {
 import authMiddleware, {
   adminMiddleware,
 } from "../middleware/authMiddleware.js";
+import upload from "../middleware/uploadMiddleware.js";
 
 const applicationRouter = express.Router();
 
-applicationRouter.post("/apply/:jobId", authMiddleware, applyJob);
+applicationRouter.post(
+  "/apply/:jobId",
+  authMiddleware,
+  upload.single("resume"),
+  applyJob
+);
 
 applicationRouter.get(
   "/",
