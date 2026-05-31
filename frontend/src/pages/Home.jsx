@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import Features from "../components/Features";
 import HowItWorks from "../components/HowItWorks";
+import FeaturedJobs from "../components/FeaturedJobs";
 
 const Home = () => {
   return (
@@ -70,6 +71,7 @@ const Home = () => {
     </section>
     <Features />
     <HowItWorks />
+    <FeaturedJobs />
     </>
   );
 };
