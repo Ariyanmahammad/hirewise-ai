@@ -4,6 +4,8 @@ import api from "../services/api";
 
 const Jobs = () => {
   const [jobs, setJobs] = useState([]);
+  const [search, setSearch] = useState("");
+  const [location, setLocation] = useState("");
 
   const fetchJobs = async () => {
     try {
@@ -18,6 +20,19 @@ const Jobs = () => {
     fetchJobs();
   }, []);
 
+  const filteredJobs = jobs.filter((job) => {
+    const searchMatch =
+      job.title.toLowerCase().includes(search.toLowerCase()) ||
+      job.company.toLowerCase().includes(search.toLowerCase()) ||
+      job.skillsRequired.join(" ").toLowerCase().includes(search.toLowerCase());
+
+    const locationMatch = job.location
+      .toLowerCase()
+      .includes(location.toLowerCase());
+
+    return searchMatch && locationMatch;
+  });
+
   return (
     <div className="min-h-screen bg-slate-50 px-8 py-16">
       <div className="max-w-6xl mx-auto">
@@ -30,23 +45,39 @@ const Jobs = () => {
           </p>
         </div>
 
+        <div className="bg-white p-6 rounded-3xl shadow-sm mb-10 grid md:grid-cols-2 gap-4">
+          <input
+            type="text"
+            placeholder="Search by title, company or skill"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="border px-4 py-3 rounded-xl w-full"
+          />
+
+          <input
+            type="text"
+            placeholder="Filter by location"
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            className="border px-4 py-3 rounded-xl w-full"
+          />
+        </div>
+
+        <p className="text-slate-600 mb-6">
+          Showing {filteredJobs.length} jobs
+        </p>
+
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {jobs.map((job) => (
+          {filteredJobs.map((job) => (
             <div
               key={job._id}
               className="bg-white rounded-3xl p-6 shadow-sm hover:shadow-lg transition"
             >
-              <h2 className="text-2xl font-bold mb-2">
-                {job.title}
-              </h2>
+              <h2 className="text-2xl font-bold mb-2">{job.title}</h2>
 
-              <p className="text-slate-600 mb-2">
-                {job.company}
-              </p>
+              <p className="text-slate-600 mb-2">{job.company}</p>
 
-              <p className="text-slate-500 mb-2">
-                📍 {job.location}
-              </p>
+              <p className="text-slate-500 mb-2">📍 {job.location}</p>
 
               <p className="text-indigo-600 font-semibold mb-4">
                 {job.salary}
@@ -72,6 +103,12 @@ const Jobs = () => {
             </div>
           ))}
         </div>
+
+        {filteredJobs.length === 0 && (
+          <p className="text-slate-500 mt-10 text-center">
+            No jobs found.
+          </p>
+        )}
       </div>
     </div>
   );
