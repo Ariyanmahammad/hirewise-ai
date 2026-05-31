@@ -54,3 +54,22 @@ export const applyJob = async (req, res) => {
     });
   }
 };
+
+export const getAllApplications = async (req, res) => {
+  try {
+    const applications = await Application.find()
+      .populate("candidate", "name email phone")
+      .populate("job", "title company");
+
+    res.status(200).json({
+      success: true,
+      count: applications.length,
+      applications,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
