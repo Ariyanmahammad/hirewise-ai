@@ -21,6 +21,25 @@ export const applyJob = async (req, res) => {
         message: "Job not found",
       });
     }
+    const requiredSkills = job.skillsRequired.map((skill) =>
+  skill.toLowerCase().trim()
+);
+
+const candidateSkills = skills.map((skill) =>
+  skill.toLowerCase().trim()
+);
+
+const matchedSkills = job.skillsRequired.filter((skill) =>
+  candidateSkills.includes(skill.toLowerCase().trim())
+);
+
+const missingSkills = job.skillsRequired.filter(
+  (skill) => !candidateSkills.includes(skill.toLowerCase().trim())
+);
+
+const aiScore = Math.round(
+  (matchedSkills.length / requiredSkills.length) * 100
+);
 
     const alreadyApplied = await Application.findOne({
       candidate: req.userId,
@@ -34,13 +53,16 @@ export const applyJob = async (req, res) => {
       });
     }
 
-    const application = await Application.create({
-      candidate: req.userId,
-      job: jobId,
-      education,
-      experience,
-      skills,
-    });
+   const application = await Application.create({
+  candidate: req.userId,
+  job: jobId,
+  education,
+  experience,
+  skills,
+  aiScore,
+  matchedSkills,
+  missingSkills,
+});
 
     res.status(201).json({
       success: true,
